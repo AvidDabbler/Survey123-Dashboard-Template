@@ -7,8 +7,6 @@ const survey123Url = 'https://services2.arcgis.com/ZV8Mb62EedSw2aTU/arcgis/rest/
 const list_div = document.getElementById('list');
 const item = document.querySelector('button_popup');
 const main = document.querySelector('#main');
-const button_popup = document.querySelector('.button_popup');
-
 
 //POLYFILLS
 if (!Element.prototype.matches) {
@@ -36,10 +34,7 @@ const render = async () => {
     const response = await fetch(survey123Url);
     const json = await response.json();
     const data = json.features;
-    console.log(data)
-    //LINKS
-    //HTML
-    //PROCESSING 
+
     const sorted_data = data.sort(function (a, b) {
         if (a.attributes.new_requesting_facility <b.attributes.new_requesting_facility) {
             return -1;
@@ -55,9 +50,10 @@ const render = async () => {
         // FIELDS
         const new_requesting_facility = element.attributes.new_requesting_facility;
         const requesting_facility = element.attributes.requesting_facility;
-        const field_2 = element.attributes.field_2;
+        const surveyID = surveyID();
 
-        const confirmationURL  = surveyURL(new_requesting_facility);
+        // IMPORT SURVEY123 URL PARAMETERS FUNCTION
+        const confirmationURL  = `https://survey123.arcgis.com/share/${surveyID}?field:requesting_facility=${new_requesting_facility}`
 
         list_div.innerHTML += 
             `<div id='${new_requesting_facility}' class='button_popup fl w-100 '> 
