@@ -1,3 +1,5 @@
+import { surveyURL as surveyURL } from './private.js';
+
 //STATIC URLS
 const survey123Url = 'https://services2.arcgis.com/ZV8Mb62EedSw2aTU/arcgis/rest/services/survey123_76494a3414534ab482f28ced119f1f0e_fieldworker/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
 
@@ -30,6 +32,7 @@ if (!Element.prototype.matches) {
 
 const render = async () => {
     // DATA
+    list_div.innerHTML = "<p class='i'>Data is loading...</p>";
     const response = await fetch(survey123Url);
     const json = await response.json();
     const data = json.features;
@@ -47,19 +50,15 @@ const render = async () => {
         return 0;
     });
 
-    console.log(sorted_data)
-
+    list_div.innerHTML = '';
     sorted_data.forEach(element => {
         // FIELDS
         const new_requesting_facility = element.attributes.new_requesting_facility;
         const requesting_facility = element.attributes.requesting_facility;
         const field_2 = element.attributes.field_2;
 
+        const confirmationURL  = surveyURL(new_requesting_facility);
 
-        const confirmationURL = `https://survey123.arcgis.com/share/9c92a1442f8b49faa8d5c8da83e581be?field:requesting_facility=${new_requesting_facility}`
-        // https://survey123.arcgis.com/share/1cb28b212b5542acbbdbaa35feba0765?field:submittedBy=Fernando%20Paredes
-        
-        
         list_div.innerHTML += 
             `<div id='${new_requesting_facility}' class='button_popup fl w-100 '> 
                 <a class='openpop center fl w-100 link dim br2 ph3 pv2 mb2 dib white bg-blue' data-url="${confirmationURL}">
