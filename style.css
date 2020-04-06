@@ -22,8 +22,7 @@
 
     width: 90%;
     margin-left: -45%;
-}
-@media (max-width: 800px) {
+}@media (max-width: 800px) {
     #ifrm {
         border: solid 1px black;
         position: fixed;

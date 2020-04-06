@@ -1,4 +1,4 @@
-import { surveyURL as surveyURL } from './private.js';
+import { surveyID as surveyID } from './private.js';
 
 //STATIC URLS
 const survey123Url = 'https://services2.arcgis.com/ZV8Mb62EedSw2aTU/arcgis/rest/services/survey123_76494a3414534ab482f28ced119f1f0e_fieldworker/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
@@ -10,23 +10,16 @@ const main = document.querySelector('#main');
 
 //POLYFILLS
 if (!Element.prototype.matches) {
-    Element.prototype.matches = Element.prototype.msMatchesSelector || 
-                                Element.prototype.webkitMatchesSelector;
-  }
-  
-  if (!Element.prototype.closest) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+}if (!Element.prototype.closest) {
     Element.prototype.closest = function(s) {
       var el = this;
-  
       do {
         if (el.matches(s)) return el;
         el = el.parentElement || el.parentNode;
       } while (el !== null && el.nodeType === 1);
       return null;
-    };
-  }
-
-
+}};
 
 const render = async () => {
     // DATA
@@ -50,10 +43,10 @@ const render = async () => {
         // FIELDS
         const new_requesting_facility = element.attributes.new_requesting_facility;
         const requesting_facility = element.attributes.requesting_facility;
-        const surveyID = surveyID();
+        const surveyI = surveyID();
 
         // IMPORT SURVEY123 URL PARAMETERS FUNCTION
-        const confirmationURL  = `https://survey123.arcgis.com/share/${surveyID}?field:requesting_facility=${new_requesting_facility}`
+        const confirmationURL  = `https://survey123.arcgis.com/share/${surveyI}?field:requesting_facility=${new_requesting_facility}`
 
         list_div.innerHTML += 
             `<div id='${new_requesting_facility}' class='button_popup fl w-100 '> 
