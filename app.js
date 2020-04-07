@@ -1,7 +1,7 @@
-import { surveyID as surveyID } from './private.js';
+import { surveyID as surveyID, jsonURL as jsonURL} from './private.js';
 
 //STATIC URLS
-const survey123Url = 'https://services2.arcgis.com/ZV8Mb62EedSw2aTU/arcgis/rest/services/survey123_76494a3414534ab482f28ced119f1f0e_fieldworker/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json'
+const survey123Url = jsonURL();
 
 //HTML SECTION SELECTORS
 const list_div = document.getElementById('list');
@@ -29,10 +29,10 @@ const render = async () => {
     const data = json.features;
 
     const sorted_data = data.sort(function (a, b) {
-        if (a.attributes.new_requesting_facility <b.attributes.new_requesting_facility) {
+        if (a.properties.new_requesting_facility <b.properties.new_requesting_facility) {
             return -1;
         }
-        if (b.attributes.new_requesting_facility <a.attributes.new_requesting_facility) {
+        if (b.properties.new_requesting_facility <a.properties.new_requesting_facility) {
             return 1;
         }
         return 0;
@@ -41,8 +41,8 @@ const render = async () => {
     list_div.innerHTML = '';
     sorted_data.forEach(element => {
         // FIELDS
-        const new_requesting_facility = element.attributes.new_requesting_facility;
-        const requesting_facility = element.attributes.requesting_facility;
+        const new_requesting_facility = element.properties.new_requesting_facility;
+        const requesting_facility = element.properties.requesting_facility;
         const surveyI = surveyID();
 
         // IMPORT SURVEY123 URL PARAMETERS FUNCTION
