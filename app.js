@@ -1,4 +1,6 @@
 import { surveyID as surveyID, jsonURL as jsonURL} from './private.js';
+import * as survey from './survey.js';
+
 
 
 
@@ -30,8 +32,8 @@ if (!Element.prototype.matches) {
 }};
 
 
-const clear_data = async () => {
-    list_div.innerHTML = '';
+const clear_div = async (div) => {
+    div.innerHTML = '';
     return;
 };
 
@@ -105,7 +107,7 @@ const searching = async (value) => {
     filtered = true;
 
     list_div.innerHTML = 'Data is loading...';
-    clear_data();
+    clear_div(list_div);
     let fv = filter_data(facilities, `${value}*`);
     console.log(fv);
     render(await fv);
