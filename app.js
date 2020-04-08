@@ -1,14 +1,20 @@
 import { surveyID as surveyID, jsonURL as jsonURL} from './private.js';
-import * as survey from './survey.js';
+import { searching, facility_render, get_survey_data, filter_data } from './survey.js';
 
 
+// HTML VARIALBES
+const iframe_div = document.getElementById('ifrm');
+const iframe_target = event.target.closest('#ifrm');
+
+const search_target = event.target.closest('#search');
+const search_bar_value = document.getElementById('search-bar').value;
+
+const list_target = event.target.closest('.openpop');
 
 
 // JAVASCRIPT VARIABLES
 let facilities, filtered_facilities;
 let filtered = false;
-
-
 
 //STATIC URLS
 const survey123Url = jsonURL();
@@ -38,131 +44,57 @@ const clear_div = async (div) => {
 };
 
 
-// DATA PROCESSING
-const filter_data = (data, input) => {
-    const d = data.filter(d => {
-        return new RegExp('^' + input.replace(/\*/g, '.*') + '$').test(d.properties.requesting_facility)
-        // return d.features.properties.vehicle_number == `${input}*`
-    });
-    filtered_facilities = d;
-    filtered = true;
-    return d
-};
 
-
-const get_survey_data = async () => {
-    console.log('fetch');
-    const response = await fetch(survey123Url);
-    console.log(response);
-
-    const json = await response.json();
-    console.log(json);
-
-    let data = json.features;
-    console.log('get_survey_data', data);
-    facilities = data;
-    return data;
-}
-
-
-const render = async (d) => {
-    // DATA
-    list_div.innerHTML = "<p class='i'>Data is loading...</p>";
-    const response = await fetch(survey123Url);
-    const json = await response.json();
-    const data = json.features;
-
-    const sorted_data = d.sort(function (a, b) {
-        if (a.properties.new_requesting_facility <b.properties.new_requesting_facility) {
-            return -1;
-        }
-        if (b.properties.new_requesting_facility <a.properties.new_requesting_facility) {
-            return 1;
-        }
-        return 0;
-    });
-
-    list_div.innerHTML = '';
-    sorted_data.forEach(element => {
-        // FIELDS
-        const new_requesting_facility = element.properties.new_requesting_facility;
-        const requesting_facility = element.properties.requesting_facility;
-        const surveyI = surveyID();
-
-        // IMPORT SURVEY123 URL PARAMETERS FUNCTION
-        const confirmationURL  = `https://survey123.arcgis.com/share/${surveyI}?field:requesting_facility=${new_requesting_facility}`
-
-        list_div.innerHTML += 
-            `<div id='${new_requesting_facility}' class='button_popup fl w-100 '> 
-                <a class='openpop center fl w-100 link dim br2 ph3 pv2 mb2 dib white bg-blue' data-url="${confirmationURL}">
-                    <h2 class='f3 helvetica fl w-100'>${new_requesting_facility}</h2>
-                </a>
-            </div>`
-    
-    });
-
-};
-
-const searching = async (value) => {
-    filtered = true;
-
-    list_div.innerHTML = 'Data is loading...';
-    clear_div(list_div);
-    let fv = filter_data(facilities, `${value}*`);
-    console.log(fv);
-    render(await fv);
-    return;
-};
 
 
 const clickEvent = (event) => {
     event.preventDefault();
-    const iframe_exists = document.getElementById('iframe');
-    const iframe = event.target.closest('#iframe');
-    const search = event.target.closest('#search');
-    const search_bar = document.getElementById('search-bar').value;
 
-    if(!iframe && iframe_exists){
-        console.log('iframe present')
-        iframe.parentNode.removeChild(iframe);
+    if(!iframe_target && iframe_div){
+        iframe_div.parentNode.removeChild(iframe_div);
         return;
 
     
     // SEARCH CLICK!!!
-    }else if(search){
+    }else if(search_target){
         console.log('search')
-        if(search_bar != ''){
-            console.log('search 1', search_bar)
-            searching(search_bar);
-        }else if(search_bar == '' && filtered){
+        if(search_bar_value != ''){
+            console.log('search 1', search_bar_value)
+            searching(search_bar_value, filtered);
+        }else if(search_bar_value == '' && filtered){
             console.log('search 2')
-            render(facilities)
+            facility_render(facilities)
             return;
         }
-    // CLICK LIST ELEMENT AND OPEN IFRAME!!!
-    }else if(!event.target.closest('.openpop')){
-        console.log('Not list_div');
-        return;
-    }else{        
+    // CLICK LIST ITEM
+    }else if (list_target){        
         console.log('list element click')
-
+    
         let item = event.target.closest('.openpop');
         let url = item.getAttribute('data-url');
-        console.log(`url: ${url}`)
-
+    
         var ifrm = document.createElement('iframe');
         ifrm.setAttribute('id', 'ifrm'); // assign an id
         ifrm.setAttribute(`src`, url);
-
+    
         // to place before another page element
         var el = document.getElementById('marker');
         main.parentNode.insertBefore(ifrm, el);
+        
+    // CLICK LIST ELEMENT AND OPEN IFRAME!!!
+    }else if(!list_target){
+        console.log('Not list_div');
+        return;
 
+
+    }
+    else{
+        console.error('Unregistered Click')
     }
 }
 
 
-get_survey_data().then(data =>{
-    render(facilities);
+get_survey_data(survey123Url, facilities).then(data =>{
+    facility_render(data, list_div, surveyID());
 });
 window.addEventListener("click", clickEvent, false)
