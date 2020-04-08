@@ -134,7 +134,7 @@ const clickEvent = (event) => {
             searching(search_bar);
         }else if(search_bar == '' && filtered){
             console.log('search 2')
-            render(vehicles)
+            render(facilities)
             return;
         }
     // CLICK LIST ELEMENT AND OPEN IFRAME!!!
